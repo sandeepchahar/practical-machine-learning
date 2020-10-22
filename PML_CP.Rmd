@@ -1,0 +1,75 @@
+---
+title: "PML_CP"
+author: "Sandeep Chahar"
+date: "22/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+**OVERVIEW**
+
+Using TEST and Training set from FITBIT we will predict the pattern. 
+
+ 5 diff. classes:
+
+**LOADING DATA**
+
+ "pml-training.csv" = training set.
+ "pml-testing.csv" = test set.
+
+```{r}
+d <- read.csv("pml-training.csv")
+v <- read.csv("pml-testing.csv")
+```
+
+**CHECKING DATA**
+
+```{r}
+library(caret)
+library(randomForest)
+set.seed(190)
+```
+
+Training set = 70% Test Set = 30% after splitting data
+
+```{r}
+i = createDataPartition(y=d$classe, p=0.7, list=FALSE)
+tn = d[i,]
+ts = d[-i,]
+```
+
+**Remove null values**
+
+```{r}
+nc = sapply(tn, function(x) {sum(is.na(x))}) #column of null values
+nc
+cn = names(nc[nc > 0]) #Vector of null values
+tn = tn[, !names(tn) %in% cn]
+names(tn)
+
+tn <- tn[, !names(tn) %in% c("--", "user", "tst_1", "tst_2", "cvtd_t", "n", "n")]
+```
+
+REMOVE NOLL VALUES FOR TRAINING SET
+
+```{r}
+nc = sapply(v, function(x) {sum(is.na(x))}) 
+cn = names(nc[nc > 0]) 
+v = v[, !names(v) %in% cn] 
+v <- v[, !names(v) %in% c("X", "uname", "tst_1", "tst_2", "cvtd_t", "n_w", "nu_w")]
+```
+
+REMOVE NULL VALUES FOR TEST SET
+
+```{r}
+naColumns = sapply(ts, function(x) {sum(is.na(x))})
+cn = names(nc[nc > 0]) 
+ts = ts[, !names(ts) %in% cn] 
+ts <- ts[, !names(ts) %in% c("X", "u_n", "tst_1", "_tst_2", "cvtd_t", "n_w", "nu_w")]
+```
